@@ -115,42 +115,25 @@ let drawPacman = (dir, pos) => {
 
     context.beginPath();
     context.fillStyle = "yellow";
-    let basic = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8,]
+    let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8,0,0,false]
     if (dir === "ArrowLeft") {
-        context.arc(
-
-            Math.PI * 0.75,
-            Math.PI * 1.25,
-            true
-        );
+        conf[3] = Math.PI * 0.75;
+        conf[4] = Math.PI * 1.25;
+        conf[5] = true;
     } else if (dir === "ArrowRight") {
-        context.arc(
-            x + sObj.dimension / 2,
-            y + sObj.dimension / 2,
-            sObj.dimension / 2.8,
-            Math.PI * 0.25,
-            Math.PI * 1.75,
-            false
-        );
+        conf[3] = Math.PI * 0.25;
+        conf[4] = Math.PI * 1.75;
+        conf[5] = false;
     } else if (dir === "ArrowDown") {
-        context.arc(
-            x + sObj.dimension / 2,
-            y + sObj.dimension / 2,
-            sObj.dimension / 2.8,
-            Math.PI * 0.75,
-            Math.PI * 0.25,
-            false
-        );
+        conf[3] = Math.PI * 0.75;
+        conf[4] = Math.PI * 0.25;
+        conf[5] = false;
     } else if (dir === "ArrowUp") {
-        context.arc(
-            x + sObj.dimension / 2,
-            y + sObj.dimension / 2,
-            sObj.dimension / 2.8,
-            Math.PI * 1.25,
-            Math.PI * 1.75,
-            true
-        );
+        conf[3] = Math.PI * 1.25;
+        conf[4] = Math.PI * 1.75;
+        conf[5] = true;
     }
+    context.arc(...conf);
     context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
     context.closePath();
     context.fill();
