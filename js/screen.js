@@ -85,15 +85,15 @@ let movePacman = (dir, pos) => {
 
     if (dir === "ArrowLeft") {
         arrowPosY = pos[1];
-        arrowPosX = pos[0]-1;
+        arrowPosX = pos[0] - 1;
     } else if (dir === "ArrowRight") {
         arrowPosY = pos[1];
-        arrowPosX = pos[0]+1;;
+        arrowPosX = pos[0] + 1;;
     } else if (dir === "ArrowUp") {
-        arrowPosY = pos[1]-1;
+        arrowPosY = pos[1] - 1;
         arrowPosX = pos[0];
     } else if (dir === "ArrowDown") {
-        arrowPosY = pos[1]+1;
+        arrowPosY = pos[1] + 1;
         arrowPosX = pos[0];
     }
     nextPos = level[arrowPosY][arrowPosX];
@@ -115,11 +115,10 @@ let drawPacman = (dir, pos) => {
 
     context.beginPath();
     context.fillStyle = "yellow";
+    let basic = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8,]
     if (dir === "ArrowLeft") {
         context.arc(
-            x + sObj.dimension / 2,
-            y + sObj.dimension / 2,
-            sObj.dimension / 2.8,
+
             Math.PI * 0.75,
             Math.PI * 1.25,
             true
