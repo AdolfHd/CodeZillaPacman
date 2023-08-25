@@ -7,7 +7,7 @@ let setScrObj = (screenObj) => {
     sObj = screenObj;
 };
 let setGameLevel = (gameLevel) => {
-	level = gameLevel;
+    level = gameLevel;
 };
 let drawScreen = () => {
     canvas = document.getElementById(sObj.canvasId);
@@ -56,7 +56,7 @@ let drawLevel = (gLevels, cLevel) => {
                 context.arc(
                     x + sObj.dimension / 2,
                     y + sObj.dimension / 2,
-                    sObj.dimension / 2,
+                    sObj.dimension / 2.8,
                     Math.PI * 0.15,
                     Math.PI * 1.85,
                     false
@@ -80,38 +80,42 @@ let drawLevel = (gLevels, cLevel) => {
 
 let movePacman = (dir, pos) => {
     let arrowPosX = 0,
-    arrowPosY = 0;
-    let nextPos = 0,
-    prevPos = 0;
-    
+        arrowPosY = 0;
+    let nextPos = 0;
+
     if (dir === "ArrowLeft") {
         arrowPosY = pos[1];
-        arrowPosX = pos[0] - 1;
-        nextPos = level[arrowPosY][arrowPosX];
+        arrowPosX = pos[0]-1;
+    } else if (dir === "ArrowRight") {
+        arrowPosY = pos[1];
+        arrowPosX = pos[0]+1;;
+    } else if (dir === "ArrowUp") {
+        arrowPosY = pos[1]-1;
+        arrowPosX = pos[0];
+    } else if (dir === "ArrowDown") {
+        arrowPosY = pos[1]+1;
+        arrowPosX = pos[0];
     }
+    nextPos = level[arrowPosY][arrowPosX];
 
     if ([0, 3, 4, 6].includes(nextPos)) {
         level[pos[1]][pos[0]] = 0;
         level[arrowPosY][arrowPosX] = 5;
         pos = [arrowPosX, arrowPosY];
-        console.log(pos);
-        drawPacman(dir , pos);
+        drawPacman(dir, pos);
     }
-    console.log(pos);
     return pos;
 };
-
-
 
 let drawPacman = (dir, pos) => {
     let x = pos[0] * sObj.dimension;
     let y = pos[1] * sObj.dimension;
 
-    clearRect();
+    clearRect(dir, pos);
 
+    context.beginPath();
+    context.fillStyle = "yellow";
     if (dir === "ArrowLeft") {
-        context.beginPath();
-        context.fillStyle = "yellow";
         context.arc(
             x + sObj.dimension / 2,
             y + sObj.dimension / 2,
@@ -119,34 +123,66 @@ let drawPacman = (dir, pos) => {
             Math.PI * 0.75,
             Math.PI * 1.25,
             true
-            );
-    context.lineTo(x + sObj.dimension / 2, y + sObj.dimension);
+        );
+    } else if (dir === "ArrowRight") {
+        context.arc(
+            x + sObj.dimension / 2,
+            y + sObj.dimension / 2,
+            sObj.dimension / 2.8,
+            Math.PI * 0.25,
+            Math.PI * 1.75,
+            false
+        );
+    } else if (dir === "ArrowDown") {
+        context.arc(
+            x + sObj.dimension / 2,
+            y + sObj.dimension / 2,
+            sObj.dimension / 2.8,
+            Math.PI * 0.75,
+            Math.PI * 0.25,
+            false
+        );
+    } else if (dir === "ArrowUp") {
+        context.arc(
+            x + sObj.dimension / 2,
+            y + sObj.dimension / 2,
+            sObj.dimension / 2.8,
+            Math.PI * 1.25,
+            Math.PI * 1.75,
+            true
+        );
+    }
+    context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
     context.closePath();
     context.fill();
-    }
 }
-
 
 let clearRect = (dir, pos) => {
     let cRX = pos[0];
     let cRY = pos[1];
     context.fillStyle = sObj.backgroundColor;
-    context.clearRect(
-        pos[0] * sObj.dimension,
-        pos[1] * sObj.dimension,
-        sObj.dimension,
-        sObj.dimension
-    );
-    if (dir === "ArrowLeft"){
-        cRX++;
-    }
     context.fillRect(
         pos[0] * sObj.dimension,
         pos[1] * sObj.dimension,
         sObj.dimension,
         sObj.dimension
     );
+    if (dir === "ArrowLeft") {
+        cRX++;
+    } else if (dir === "ArrowRight") {
+        cRX--;
+    } else if (dir === "ArrowUp") {
+        cRY++;
+    } else if (dir === "ArrowDown") {
+        cRY--;
+    }
+    context.fillRect(
+        cRX * sObj.dimension,
+        cRY * sObj.dimension,
+        sObj.dimension,
+        sObj.dimension
+    );
 };
-export { setScrObj, setGameLevel, drawScreen, drawLevel, movePacman};
+export { setScrObj, setGameLevel, drawScreen, drawLevel, movePacman };
 
 /* export { setScrObj, drawScreen, drawLevel }; */

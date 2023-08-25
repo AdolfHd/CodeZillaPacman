@@ -1,2 +1,0 @@
-# CodeZillaPacman
-simple pcaman game
