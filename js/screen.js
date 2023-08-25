@@ -121,9 +121,9 @@ let drawPacman = (dir, pos) => {
         conf[4] = Math.PI * 1.25;
         conf[5] = true;
     } else if (dir === "ArrowRight") {
-        conf[3] = Math.PI * 0.25;
-        conf[4] = Math.PI * 1.75;
-        conf[5] = false;
+        conf[3] = Math.PI * 1.75;
+        conf[4] = Math.PI * 0.25;
+        conf[5] = true;
     } else if (dir === "ArrowDown") {
         conf[3] = Math.PI * 0.75;
         conf[4] = Math.PI * 0.25;
