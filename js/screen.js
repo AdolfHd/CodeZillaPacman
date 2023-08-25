@@ -115,23 +115,19 @@ let drawPacman = (dir, pos) => {
 
     context.beginPath();
     context.fillStyle = "yellow";
-    let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8,0,0,false]
+    let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8,0,0,true]
     if (dir === "ArrowLeft") {
         conf[3] = Math.PI * 0.75;
         conf[4] = Math.PI * 1.25;
-        conf[5] = true;
     } else if (dir === "ArrowRight") {
         conf[3] = Math.PI * 1.75;
         conf[4] = Math.PI * 0.25;
-        conf[5] = true;
     } else if (dir === "ArrowDown") {
-        conf[3] = Math.PI * 0.75;
-        conf[4] = Math.PI * 0.25;
-        conf[5] = false;
+        conf[3] = Math.PI * 0.25;
+        conf[4] = Math.PI * 0.75;
     } else if (dir === "ArrowUp") {
         conf[3] = Math.PI * 1.25;
         conf[4] = Math.PI * 1.75;
-        conf[5] = true;
     }
     context.arc(...conf);
     context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
