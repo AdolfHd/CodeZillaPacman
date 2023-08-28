@@ -21,7 +21,6 @@ let drawLevel = (gLevels, cLevel) => {
     for (const yElem of level) {
         for (const xElem of yElem) {
             if (xElem == 1) {
-                //wall
                 context.fillStyle = "blue";
                 context.fillRect(x, y, sObj.dimension, sObj.dimension);
             } else if (xElem == 4) {
@@ -58,7 +57,7 @@ let drawLevel = (gLevels, cLevel) => {
                     y + sObj.dimension / 2,
                     sObj.dimension / 2.8,
                     Math.PI * 0.15,
-                    Math.PI * 1.85,
+                    Math.PI * 1.75,
                     false
                 );
                 context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
@@ -115,7 +114,7 @@ let drawPacman = (dir, pos) => {
 
     context.beginPath();
     context.fillStyle = "yellow";
-    let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8,0,0,true]
+    let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8, 0, 0, true];
     if (dir === "ArrowLeft") {
         conf[3] = Math.PI * 0.75;
         conf[4] = Math.PI * 1.25;
@@ -162,5 +161,3 @@ let clearRect = (dir, pos) => {
     );
 };
 export { setScrObj, setGameLevel, drawScreen, drawLevel, movePacman };
-
-/* export { setScrObj, drawScreen, drawLevel }; */
