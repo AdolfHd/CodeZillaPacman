@@ -10,13 +10,4 @@ let getPos = (level, toSearch) => {
     return pos;
 };
 
-let blockScrollPage = ()=>{
-    window.addEventListener( 'keydown', (e) => {
-        if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.key) > -1){
-            e.preventDefault();
-        }
-    },
-    false
-    );
-};
-export {getPos, blockScrollPage};
+export {getPos};

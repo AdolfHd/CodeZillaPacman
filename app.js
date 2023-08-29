@@ -1,6 +1,6 @@
 import {gameLevels} from "./js/level.js";
 import {setScrObj, drawScreen, drawLevel, setGameLevel, movePacman} from "./js/screen.js";
-import {getPos, blockScrollPage} from "./js/utility.js"
+import {getPos} from "./js/utility.js"
 
 let currntLevel = 0;
 let inGameLevel = [];
@@ -18,7 +18,6 @@ class Game {
     constructor(){
         setScrObj(sObj);
         drawScreen();
-        blockScrollPage();
         setGameLevel([...gameLevels[currntLevel]]);
         drawLevel();
     }
