@@ -10,4 +10,16 @@ let getPos = (level, toSearch) => {
     return pos;
 };
 
-export {getPos};
+let getLevelPills = (leve, toSearch) => {
+    let pillCountr = 0;
+    level.forEach((yElem)=>{
+        pillCountr =+ yElem.filter((x)=>{toSearch.includes(x).length});
+    })
+    return pillCountr;
+};
+
+let cloneArray = (ArrayIn) => {
+    return JSON.parse(JSON.stringify(ArrayIn));
+
+};
+export {getPos, getLevelPills, cloneArray};

@@ -2,12 +2,33 @@ let sObj = {};
 let canvas, context;
 let x = 0, y = 0;
 let level = [];
+let lastEaten = 0;
 
 let setScrObj = (screenObj) => {
     sObj = screenObj;
 };
 let setGameLevel = (gameLevel) => {
     level = gameLevel;
+};
+let getLastEaten = () => {
+    return lastEaten;
+};
+let clearLastEaten = () => {
+    lastEaten = 0;
+};
+let clearScreen = () => {
+    sObj = {};
+    x = 0;
+    y = 0;
+    level = [];
+    lastEaten = 0;
+};
+let drawScore = (score) => {
+    context.fillStyle = sObj.backgroundColor;
+    context.fillRect((level[0].length + 4) * sObj.dimension, 34, 40, 20);
+    context.fillStyle = "yellow"
+    context.font = "23px Arial";
+    context.fillText = (score, (level[0].length + 1) * sObj.dimension, 50);
 };
 let drawScreen = () => {
     canvas = document.getElementById(sObj.canvasId);
@@ -18,6 +39,9 @@ let drawScreen = () => {
     context.fillRect(0, 0, sObj.width, sObj.height);
 };
 let drawLevel = (gLevels, cLevel) => {
+    context.fillStyle = "yellow";
+    context.font = "23px Arial";
+    context.fillText = ("Score: ", (level[0].length + 1) * sObj.dimension, 50);
     for (const yElem of level) {
         for (const xElem of yElem) {
             if (xElem == 1) {
