@@ -129,7 +129,6 @@ let movePacman = (dir, pos) => {
     }
     return pos;
 };
-
 let drawPacman = (dir, pos) => {
     let x = pos[0] * sObj.dimension;
     let y = pos[1] * sObj.dimension;
@@ -157,7 +156,13 @@ let drawPacman = (dir, pos) => {
     context.closePath();
     context.fill();
 }
-
+let drawWin = () => {
+    context.fillStyle = "yellow";
+    context.font = "40px Arial";
+    context.fillText("You Win!!", (level[0].length + 1)* sObj.dimension, 10);
+    context.font = "20px Arial";
+    context.fillText("Siguiente nivel en 3 segundos", (level[0].length + 1)* sObj.dimension, 175);
+}
 let clearRect = (dir, pos) => {
     let cRX = pos[0];
     let cRY = pos[1];
@@ -184,4 +189,14 @@ let clearRect = (dir, pos) => {
         sObj.dimension
     );
 };
-export { setScrObj, setGameLevel, drawScreen, drawLevel, movePacman };
+export { setScrObj,
+    setGameLevel,
+    drawScreen,
+    drawLevel,
+    movePacman,
+    getLastEaten,
+    clearLastEaten,
+    clearScreen,
+    drawWin,
+    drawScore
+};

@@ -10,7 +10,7 @@ let getPos = (level, toSearch) => {
     return pos;
 };
 
-let getLevelPills = (leve, toSearch) => {
+let getLevelPills = (level, toSearch) => {
     let pillCountr = 0;
     level.forEach((yElem)=>{
         pillCountr =+ yElem.filter((x)=>{toSearch.includes(x).length});
