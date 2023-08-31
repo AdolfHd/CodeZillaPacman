@@ -28,7 +28,7 @@ let drawScore = (score) => {
     context.fillRect((level[0].length + 4) * sObj.dimension, 34, 40, 20);
     context.fillStyle = "yellow"
     context.font = "23px Arial";
-    context.fillText(score, (level[0].length + 1) * sObj.dimension, 50);
+    context.fillText(score, (level[0].length + 1) * sObj.dimension, 80);
 };
 let drawScreen = () => {
     canvas = document.getElementById(sObj.canvasId);
