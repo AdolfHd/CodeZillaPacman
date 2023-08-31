@@ -75,7 +75,7 @@ class Game {
         drawWin();
         let resetGame = setInterval(() => {
             clearScreen();
-            this.new();
+            /* this.new(); */
             this.play();
             clearInterval(resetGame);
         }, 3000);

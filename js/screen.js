@@ -24,6 +24,7 @@ let clearScreen = () => {
     lastEaten = 0;
 };
 let drawScore = (score) => {
+    console.log(typeof(context.fillText));
     context.fillStyle = sObj.backgroundColor;
     context.fillRect((level[0].length + 4) * sObj.dimension, 34, 40, 20);
     context.fillStyle = "yellow"
@@ -39,9 +40,7 @@ let drawScreen = () => {
     context.fillRect(0, 0, sObj.width, sObj.height);
 };
 let drawLevel = (gLevels, cLevel) => {
-    context.fillStyle = "yellow";
-    context.font = "23px Arial";
-    context.fillText = ("Score: ", (level[0].length + 1) * sObj.dimension, 50);
+
     for (const yElem of level) {
         for (const xElem of yElem) {
             if (xElem == 1) {
@@ -88,17 +87,34 @@ let drawLevel = (gLevels, cLevel) => {
                 context.closePath();
                 context.fill();
             } else if (xElem == 2) {
+                let tmp = (sObj.dimension)-(sObj.dimension /1.1);
                 context.beginPath();
                 context.fillStyle = "#6A2CE3";
-
+                context.moveTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
+                context.lineTo(x + sObj.dimension / 2.6, y + sObj.dimension / 2);
+                context.arc(
+                    x + sObj.dimension / 2,
+                    y + sObj.dimension / 2,
+                    sObj.dimension / 2.6,
+                    0,
+                    Math.PI,
+                    true
+                );
+                context.lineTo(x + tmp, y + sObj.dimension - tmp);
+                context.lineTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
                 context.closePath();
                 context.fill();
+                /* context.stroke(); */
             }
             x += sObj.dimension;
         }
         y += sObj.dimension;
         x = 0;
     }
+
+    context.fillStyle = "yellow";
+    context.font = "23px Arial";
+    context.fillText = ("Score: ", (level[0].length + 1) * sObj.dimension, 50);
 };
 
 let movePacman = (dir, pos) => {
@@ -157,11 +173,14 @@ let drawPacman = (dir, pos) => {
     context.fill();
 }
 let drawWin = () => {
+    console.log(context);
+    console.log(typeof(context.fillText));
+    console.log(canvas);
     context.fillStyle = "yellow";
-    context.font = "40px Arial";
-    context.fillText("You Win!!", (level[0].length + 1)* sObj.dimension, 10);
-    context.font = "20px Arial";
-    context.fillText("Siguiente nivel en 3 segundos", (level[0].length + 1)* sObj.dimension, 175);
+    context.font = "40px monospace";
+    context.fillText("You Win!!", ((level[0].length + 1)* sObj.dimension), 10);
+    context.font = "20px monospace";
+    context.fillText("Siguiente nivel en 3 segundos", ((level[0].length + 1)* sObj.dimension), 175);
 }
 let clearRect = (dir, pos) => {
     let cRX = pos[0];
