@@ -12,14 +12,14 @@ let getPos = (level, toSearch) => {
 
 let getLevelPills = (level, toSearch) => {
     let pillCountr = 0;
+    console.warn(level);
     level.forEach((yElem)=>{
-        pillCountr =+ yElem.filter((x)=>{toSearch.includes(x).length});
-    })
+        pillCountr += yElem.filter(x => toSearch.includes(x)).length;
+    });
     return pillCountr;
 };
 
 let cloneArray = (ArrayIn) => {
     return JSON.parse(JSON.stringify(ArrayIn));
-
 };
 export {getPos, getLevelPills, cloneArray};

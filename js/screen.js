@@ -24,12 +24,11 @@ let clearScreen = () => {
     lastEaten = 0;
 };
 let drawScore = (score) => {
-    console.log(typeof(context.fillText));
     context.fillStyle = sObj.backgroundColor;
     context.fillRect((level[0].length + 4) * sObj.dimension, 34, 40, 20);
     context.fillStyle = "yellow"
     context.font = "23px Arial";
-    context.fillText = (score, (level[0].length + 1) * sObj.dimension, 50);
+    context.fillText(score, (level[0].length + 1) * sObj.dimension, 50);
 };
 let drawScreen = () => {
     canvas = document.getElementById(sObj.canvasId);
@@ -40,6 +39,10 @@ let drawScreen = () => {
     context.fillRect(0, 0, sObj.width, sObj.height);
 };
 let drawLevel = (gLevels, cLevel) => {
+
+    context.fillStyle = "yellow";
+    context.font = "23px Arial";
+    context.fillText("Score: ", (level[0].length + 1) * sObj.dimension, 50);
 
     for (const yElem of level) {
         for (const xElem of yElem) {
@@ -112,9 +115,6 @@ let drawLevel = (gLevels, cLevel) => {
         x = 0;
     }
 
-    context.fillStyle = "yellow";
-    context.font = "23px Arial";
-    context.fillText = ("Score: ", (level[0].length + 1) * sObj.dimension, 50);
 };
 
 let movePacman = (dir, pos) => {
@@ -173,9 +173,6 @@ let drawPacman = (dir, pos) => {
     context.fill();
 }
 let drawWin = () => {
-    console.log(context);
-    console.log(typeof(context.fillText));
-    console.log(canvas);
     context.fillStyle = "yellow";
     context.font = "40px monospace";
     context.fillText("You Win!!", ((level[0].length + 1)* sObj.dimension), 10);
