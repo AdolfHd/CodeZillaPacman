@@ -14,13 +14,24 @@ let sObj = {
 };
 let pacman = {
    lifes : 1,
+   direction  : "ArrowRight",
    pos: [0,0],
    earnedPoints : 0,
 }
-let ghost = {
-   gType : 2, //6
-   scared : false,
-   speedMultiplier: 1,
+class Ghost {
+   constructor(position){
+      let gType = 2; //6 fro a freezed ghost
+      let scared = false;
+      let pos = position;
+      let speedMultiplier = 1;
+      let direction = "ArrowLeft"
+   }
+   freeze = () => {
+      this.scared = !this.scared;
+   };
+   move = () => {
+      console.warn("moving randomly ghsts");
+   };
 }
 
-export {sObj, pacman, ghost};
+export {sObj, pacman, Ghost};

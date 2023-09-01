@@ -1,31 +1,30 @@
 import {gameLevels} from "./js/level.js";
 import { setScrObj,
     setGameLevel,
-    drawScreen,
     drawLevel,
     movePacman,
     getLastEaten,
     clearLastEaten,
     clearScreen,
     drawWin,
-    drawScore
+    drawScore,
+    freezeGhosts
 } from "./js/screen.js";
-import {getPos, getLevelPills, cloneArray} from "./js/utility.js"
+import {getPos, getLevelPills, ghostsPos} from "./js/utility.js"
 import { sObj,
     pacman,
-    ghost
+    Ghost
 } from "./js/config.js";
 
 let currntLevel = 0;
 let inGameLevel = [];
-let score = 0;
 let totLevelPills = 0;
 let gameTimer = 0;
+let ghostPack = [];
 
 class Game {
     constructor(){
         setScrObj(sObj);
-        drawScreen();
         setGameLevel([...gameLevels[currntLevel]]);
         drawLevel();
     }
@@ -34,10 +33,11 @@ class Game {
         setGameLevel(inGameLevel);
         pacman.pos = getPos(inGameLevel,5);
         totLevelPills = getLevelPills(inGameLevel, [4, 3]);
-
+        this.ghostAutomation(ghostsPos(inGameLevel));
         let moveHandler = (e) => {
             if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
-                pacman.pos = movePacman(e.key, pacman.pos);
+                pacman.direction = e.key;
+                pacman.pos = movePacman(e.key, pacman.pos, true);
                 this.scoreValidation(moveHandler);
             }
         };
@@ -46,9 +46,10 @@ class Game {
         gameTimer = setInterval(() => {
             
         }, 600 / sObj.speed);
+        
     };
     scoreValidation = (moveHandler) => {
-        if (getLastEaten == 2) {
+        if (getLastEaten() == 2) {
             //game over;
         } else {
             if ([4,3].includes(getLastEaten())) {
@@ -59,12 +60,16 @@ class Game {
                 clearInterval(gameTimer);
                 this.win();
             }
-            if (getLastEaten() === 4) score += sObj.pointCategory.pill;
-            if (getLastEaten() === 3) score += sObj.pointCategory.supperPills;
-            if (getLastEaten() === 6) score += sObj.pointCategory.blueGhost;
-            clearLastEaten();
-            drawScore(score);
+            if (getLastEaten() === 4) pacman.earnedPoints += sObj.pointCategory.pill;
+            if (getLastEaten() === 3) {
+                pacman.earnedPoints += sObj.pointCategory.supperPills;
+                freezeGhosts();
+                drawLevel();
+            }
+            if (getLastEaten() === 6) pacman.earnedPoints += sObj.pointCategory.blueGhost;
         }
+        clearLastEaten();
+        drawScore();
     };
     win = () => {
         if (gameLevels.length -1 > currntLevel) {
@@ -74,7 +79,6 @@ class Game {
         }
         inGameLevel = [];
         pacman.pos = [];
-        score = 0;
         pacman.earnedPoints= 0;
         totLevelPills = 0;
         drawWin();
@@ -85,8 +89,16 @@ class Game {
             clearInterval(resetGame);
         }, 3000);
     };
-    ghostAutomation = () => {
-        //automate ghost movig an set timer for freezed ghost
+    ghostAutomation = (pos) => {
+        pos.forEach(ghost => {
+            let tmp = new Ghost(ghost);
+            ghostPack.push(tmp);
+        });
+        ghostPack.forEach(element => {
+            /* let ghstd = setInterval(() => {
+                element.move();
+            }, 1000); */
+        });
     };
 }
 

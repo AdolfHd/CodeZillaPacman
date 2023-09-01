@@ -1,3 +1,4 @@
+
 let getPos = (level, toSearch) => {
     let pos = [];
     let foundIt= false;
@@ -9,7 +10,21 @@ let getPos = (level, toSearch) => {
     });
     return pos;
 };
-
+let ghostsPos = (level) => {
+    let positions = [];
+    let tmpY = 0;
+    level.forEach(row => {
+        tmpY++;
+        var tmpX = 0;
+        row.forEach(pos => {
+            tmpX++;
+            if (pos == 2 | pos ==6) {
+                positions.push([tmpX,tmpY]);
+            }
+        });
+    });
+    return positions;
+};
 let getLevelPills = (level, toSearch) => {
     let pillCountr = 0;
     level.forEach((yElem)=>{
@@ -18,7 +33,4 @@ let getLevelPills = (level, toSearch) => {
     return pillCountr;
 };
 
-let cloneArray = (ArrayIn) => {
-    return JSON.parse(JSON.stringify(ArrayIn));
-};
-export {getPos, getLevelPills, cloneArray};
+export {getPos, getLevelPills, ghostsPos};

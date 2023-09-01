@@ -1,3 +1,5 @@
+import { ghostsPos, getPos } from "./utility.js";
+import { pacman } from "./config.js";
 let sObj = {};
 let canvas, context;
 let x = 0, y = 0;
@@ -23,12 +25,12 @@ let clearScreen = () => {
     level = [];
     lastEaten = 0;
 };
-let drawScore = (score) => {
+let drawScore = () => {
     context.fillStyle = sObj.backgroundColor;
     context.fillRect((level[0].length + 1) * sObj.dimension, 54, 80, 40);
     context.font = "23px monospace";
     context.fillStyle = "yellow";
-    context.fillText(score, (level[0].length + 1) * sObj.dimension, 80);
+    context.fillText(pacman.earnedPoints, (level[0].length + 1) * sObj.dimension, 80);
 };
 let drawScreen = () => {
     canvas = document.getElementById(sObj.canvasId);
@@ -38,7 +40,10 @@ let drawScreen = () => {
     context.fillStyle = sObj.backgroundColor;
     context.fillRect(0, 0, sObj.width, sObj.height);
 };
-let drawLevel = (gLevels, cLevel) => {
+let drawLevel = () => {
+
+    drawScreen();
+    drawScore();
 
     context.fillStyle = "yellow";
     context.font = "23px Arial";
@@ -76,19 +81,7 @@ let drawLevel = (gLevels, cLevel) => {
                 context.closePath();
                 context.fill();
             } else if (xElem == 5) {
-                context.beginPath();
-                context.fillStyle = "yellow";
-                context.arc(
-                    x + sObj.dimension / 2,
-                    y + sObj.dimension / 2,
-                    sObj.dimension / 2.8,
-                    Math.PI * 0.15,
-                    Math.PI * 1.75,
-                    false
-                );
-                context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
-                context.closePath();
-                context.fill();
+                drawPacman(pacman.direction, getPos(level,5),true);
             } else if (xElem == 2 || xElem == 6) {//normal
                 let tmp = (sObj.dimension)-(sObj.dimension /1.1);
                 context.beginPath();
@@ -114,6 +107,8 @@ let drawLevel = (gLevels, cLevel) => {
         y += sObj.dimension;
         x = 0;
     }
+    x = 0;
+    y = 0;
 
 };
 let movePacman = (dir, pos, pac=false) => {
@@ -145,7 +140,18 @@ let movePacman = (dir, pos, pac=false) => {
     }
     return pos;
 };
-let drawPacman = (dir, pos, pac=false) => {
+let freezeGhosts = () => {
+    ghostsPos(level).forEach(pos => {
+        level[pos[1]-1][pos[0]-1] = 6;
+    });
+    let restore = setTimeout(() => {
+        ghostsPos(level).forEach(pos => {
+            level[pos[1]-1][pos[0]-1] = 2;
+            drawLevel();
+        });
+    }, 3000);
+}
+let drawPacman = (dir, pos, re=false) => {
     let x = pos[0] * sObj.dimension;
     let y = pos[1] * sObj.dimension;
     let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8, 0, 0, true];
@@ -162,8 +168,7 @@ let drawPacman = (dir, pos, pac=false) => {
         conf[3] = Math.PI * 1.25;
         conf[4] = Math.PI * 1.75;
     }
-    
-    clearRect(dir, pos);
+    if (!re)clearRect(dir, pos);
 
     context.beginPath();
     context.fillStyle = "yellow";
@@ -214,5 +219,6 @@ export { setScrObj,
     clearLastEaten,
     clearScreen,
     drawWin,
-    drawScore
+    drawScore,
+    freezeGhosts
 };
