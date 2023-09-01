@@ -12,7 +12,6 @@ let getPos = (level, toSearch) => {
 
 let getLevelPills = (level, toSearch) => {
     let pillCountr = 0;
-    console.warn(level);
     level.forEach((yElem)=>{
         pillCountr += yElem.filter(x => toSearch.includes(x)).length;
     });

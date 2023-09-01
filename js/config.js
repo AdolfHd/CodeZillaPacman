@@ -12,5 +12,15 @@ let sObj = {
       time: 2
    }
 };
+let pacman = {
+   lifes : 1,
+   pos: [0,0],
+   earnedPoints : 0,
+}
+let ghost = {
+   gType : 2, //6
+   scared : false,
+   speedMultiplier: 1,
+}
 
-export {sObj};
+export {sObj, pacman, ghost};

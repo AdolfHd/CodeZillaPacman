@@ -8,7 +8,7 @@ let setScrObj = (screenObj) => {
     sObj = screenObj;
 };
 let setGameLevel = (gameLevel) => {
-    level = gameLevel;
+    level = structuredClone(gameLevel);
 };
 let getLastEaten = () => {
     return lastEaten;
@@ -25,9 +25,9 @@ let clearScreen = () => {
 };
 let drawScore = (score) => {
     context.fillStyle = sObj.backgroundColor;
-    context.fillRect((level[0].length + 4) * sObj.dimension, 34, 40, 20);
-    context.fillStyle = "yellow"
-    context.font = "23px Arial";
+    context.fillRect((level[0].length + 1) * sObj.dimension, 54, 80, 40);
+    context.font = "23px monospace";
+    context.fillStyle = "yellow";
     context.fillText(score, (level[0].length + 1) * sObj.dimension, 80);
 };
 let drawScreen = () => {
@@ -89,10 +89,11 @@ let drawLevel = (gLevels, cLevel) => {
                 context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
                 context.closePath();
                 context.fill();
-            } else if (xElem == 2) {
+            } else if (xElem == 2 || xElem == 6) {//normal
                 let tmp = (sObj.dimension)-(sObj.dimension /1.1);
                 context.beginPath();
-                context.fillStyle = "#6A2CE3";
+                context.fillStyle = "#e50606";
+                if (xElem == 6)context.fillStyle = "#6A2CE3";
                 context.moveTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
                 context.lineTo(x + sObj.dimension / 2.6, y + sObj.dimension / 2);
                 context.arc(
@@ -107,7 +108,6 @@ let drawLevel = (gLevels, cLevel) => {
                 context.lineTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
                 context.closePath();
                 context.fill();
-                /* context.stroke(); */
             }
             x += sObj.dimension;
         }
@@ -116,8 +116,7 @@ let drawLevel = (gLevels, cLevel) => {
     }
 
 };
-
-let movePacman = (dir, pos) => {
+let movePacman = (dir, pos, pac=false) => {
     let arrowPosX = 0,
         arrowPosY = 0;
     let nextPos = 0;
@@ -136,7 +135,8 @@ let movePacman = (dir, pos) => {
         arrowPosX = pos[0];
     }
     nextPos = level[arrowPosY][arrowPosX];
-
+    if (pac)lastEaten = nextPos;
+    
     if ([0, 3, 4, 6].includes(nextPos)) {
         level[pos[1]][pos[0]] = 0;
         level[arrowPosY][arrowPosX] = 5;
@@ -145,14 +145,9 @@ let movePacman = (dir, pos) => {
     }
     return pos;
 };
-let drawPacman = (dir, pos) => {
+let drawPacman = (dir, pos, pac=false) => {
     let x = pos[0] * sObj.dimension;
     let y = pos[1] * sObj.dimension;
-
-    clearRect(dir, pos);
-
-    context.beginPath();
-    context.fillStyle = "yellow";
     let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8, 0, 0, true];
     if (dir === "ArrowLeft") {
         conf[3] = Math.PI * 0.75;
@@ -167,6 +162,11 @@ let drawPacman = (dir, pos) => {
         conf[3] = Math.PI * 1.25;
         conf[4] = Math.PI * 1.75;
     }
+    
+    clearRect(dir, pos);
+
+    context.beginPath();
+    context.fillStyle = "yellow";
     context.arc(...conf);
     context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
     context.closePath();
