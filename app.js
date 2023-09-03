@@ -2,9 +2,8 @@ import {gameLevels} from "./js/level.js";
 import { setScrObj,
     setGameLevel,
     drawLevel,
-    movePacman,
+    moveEntity,
     getLastEaten,
-    clearLastEaten,
     clearScreen,
     drawWin,
     drawScore,
@@ -37,7 +36,7 @@ class Game {
         let moveHandler = (e) => {
             if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
                 pacman.direction = e.key;
-                pacman.pos = movePacman(e.key, pacman.pos);
+                pacman.pos = moveEntity(e.key, pacman.pos);
                 this.scoreValidation(moveHandler);
             }
         };
