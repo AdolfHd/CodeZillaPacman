@@ -5,12 +5,14 @@ let canvas, context;
 let x = 0, y = 0;
 let level = [];
 let lastEaten = 0;
+let portals = [];
 
 let setScrObj = (screenObj) => {
     sObj = screenObj;
 };
 let setGameLevel = (gameLevel) => {
     level = structuredClone(gameLevel);
+    portals = [getPos(level,7),getPos(level,8)];
 };
 let getLastEaten = () => {
     return lastEaten;
@@ -111,7 +113,7 @@ let drawLevel = () => {
     y = 0;
 
 };
-let movePacman = (dir, pos, pac=false) => {
+let movePacman = (dir, pos, elem = 5) => {
     let arrowPosX = 0,
         arrowPosY = 0;
     let nextPos = 0;
@@ -121,7 +123,7 @@ let movePacman = (dir, pos, pac=false) => {
         arrowPosX = pos[0] - 1;
     } else if (dir === "ArrowRight") {
         arrowPosY = pos[1];
-        arrowPosX = pos[0] + 1;;
+        arrowPosX = pos[0] + 1;
     } else if (dir === "ArrowUp") {
         arrowPosY = pos[1] - 1;
         arrowPosX = pos[0];
@@ -130,15 +132,23 @@ let movePacman = (dir, pos, pac=false) => {
         arrowPosX = pos[0];
     }
     nextPos = level[arrowPosY][arrowPosX];
-    if (pac)lastEaten = nextPos;
-    
-    if ([0, 3, 4, 6].includes(nextPos)) {
-        level[pos[1]][pos[0]] = 0;
-        level[arrowPosY][arrowPosX] = 5;
-        pos = [arrowPosX, arrowPosY];
-        drawPacman(dir, pos);
+    if ([0, 3, 4, 6,7,8,undefined].includes(nextPos) ) {
+        if ([8,7].every(POS => pos.toString() == pacman.pos.toString()) && nextPos == undefined){
+            pacman.pos = portals.filter(POS => pos.toString() != POS.toString())[0];
+            level[pacman.pos[1]][pacman.pos[0]] = elem;
+            level[pos[1]][pos[0]] = lastEaten;
+            lastEaten = pacman.pos;
+            clearRect(dir,pos)
+        } else {
+            level[arrowPosY][arrowPosX] = elem;
+            level[pos[1]][pos[0]] = 0;
+            pacman.pos = [arrowPosX, arrowPosY];
+            lastEaten = nextPos;
+        }
+        console.warn(pos);
+        drawPacman(dir, pacman.pos);
     }
-    return pos;
+    return pacman.pos;
 };
 let freezeGhosts = () => {
     ghostsPos(level).forEach(pos => {
@@ -151,7 +161,7 @@ let freezeGhosts = () => {
         });
     }, 3000);
 }
-let drawPacman = (dir, pos, re=false) => {
+let drawPacman = (dir, pos, first = false) => {
     let x = pos[0] * sObj.dimension;
     let y = pos[1] * sObj.dimension;
     let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8, 0, 0, true];
@@ -168,7 +178,7 @@ let drawPacman = (dir, pos, re=false) => {
         conf[3] = Math.PI * 1.25;
         conf[4] = Math.PI * 1.75;
     }
-    if (!re)clearRect(dir, pos);
+    if (!first) clearRect(dir, pos);
 
     context.beginPath();
     context.fillStyle = "yellow";

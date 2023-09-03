@@ -37,7 +37,7 @@ class Game {
         let moveHandler = (e) => {
             if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
                 pacman.direction = e.key;
-                pacman.pos = movePacman(e.key, pacman.pos, true);
+                pacman.pos = movePacman(e.key, pacman.pos);
                 this.scoreValidation(moveHandler);
             }
         };
@@ -46,7 +46,6 @@ class Game {
         gameTimer = setInterval(() => {
             
         }, 600 / sObj.speed);
-        
     };
     scoreValidation = (moveHandler) => {
         if (getLastEaten() == 2) {
@@ -67,8 +66,12 @@ class Game {
                 drawLevel();
             }
             if (getLastEaten() === 6) pacman.earnedPoints += sObj.pointCategory.blueGhost;
+            if ([7,8].includes(getLastEaten())) {
+                drawLevel();
+            };
+            
         }
-        clearLastEaten();
+        //clearLastEaten();
         drawScore();
     };
     win = () => {
