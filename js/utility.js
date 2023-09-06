@@ -18,7 +18,7 @@ let ghostsPos = (level) => {
         var tmpX = 0;
         row.forEach(pos => {
             tmpX++;
-            if (pos == 2 | pos ==6) {
+            if ([21,22,23,24,61,62,63,64].includes(pos)) {
                 positions.push([tmpX,tmpY]);
             }
         });

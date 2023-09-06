@@ -19,13 +19,11 @@ let pacman = {
    earnedPoints : 0,
 }
 class Ghost {
-   constructor(position){
-      let gType = 2; //6 fro a freezed ghost
-      let scared = false;
-      let pos = position;
-      let speedMultiplier = 1;
-      let direction = "ArrowLeft"
-   }
+   gType = 21; //6 fro a freezed ghost
+   scared = false;
+   position = [0,0];
+   speedMultiplier = 1;
+   direction = "ArrowLeft"
    freeze = () => {
       this.scared = !this.scared;
    };

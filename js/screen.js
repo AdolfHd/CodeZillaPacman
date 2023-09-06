@@ -1,5 +1,5 @@
 import { ghostsPos, getPos } from "./utility.js";
-import { pacman } from "./config.js";
+import { pacman, Ghost } from "./config.js";
 let sObj = {};
 let canvas, context;
 let x = 0, y = 0;
@@ -84,7 +84,7 @@ let drawLevel = () => {
                 context.fill();
             } else if (xElem == 5) {
                 drawEntity(pacman.direction, getPos(level,5),true,xElem);
-            } else if (xElem == 2 || xElem == 6) {//normal
+            } else if ([21,22,23,24,61,62,63,64].includes(xElem)) {//normal
                 drawEntity('ArrowLeft', [x+sObj.dimension, y+sObj.dimension],true,xElem);
             }
             x += sObj.dimension;
@@ -115,30 +115,35 @@ let moveEntity = (dir, pos, elem = 5 ) => {
         arrowPosX = pos[0];
     }
     nextPos = level[arrowPosY][arrowPosX];
-    if ([0, 3, 4, 6,7,8,undefined].includes(nextPos) ) {
-        if (nextPos == undefined){//why i use pos to compare the 8 and 7 i cant remember
-            level[pos[1]][pos[0]] = lastEaten;
+    if ([0, 3, 4, 61, 62, 63, 64, 7, 8, undefined].includes(nextPos) ) {
+        level[pos[1]][pos[0]] = lastEaten;
+        if (nextPos == undefined){
             clearRect(dir,pos);
             pos = portals.filter(POS => pos.toString() != POS.toString())[0];
             level[pos[1]][pos[0]] = elem;
-            lastEaten = level[pos[1]][pos[0]];//may cause fails
+            lastEaten = level[pos[1]][pos[0]];
         } else {
             level[arrowPosY][arrowPosX] = elem;
-            level[pos[1]][pos[0]] = 0;
+            if(elem == 5) level[pos[1]][pos[0]] = 0;
             pos = [arrowPosX, arrowPosY];
             lastEaten = nextPos;
         }
+        console.log(elem,lastEaten);
         drawEntity(dir, pos, false, elem);
     };
     return pos;
 };
 let freezeGhosts = () => {
+    let tmp = 61;
     ghostsPos(level).forEach(pos => {
-        level[pos[1]-1][pos[0]-1] = 6;
+        level[pos[1]-1][pos[0]-1] = tmp;
+        tmp ++
     });
     let restore = setTimeout(() => {
+        let tmp = 21;
         ghostsPos(level).forEach(pos => {
-            level[pos[1]-1][pos[0]-1] = 2;
+            level[pos[1]-1][pos[0]-1] = tmp;
+            tmp++;
             drawLevel();
         });
     }, 3000);
@@ -168,12 +173,11 @@ let drawEntity = (dir, pos, first = false, entity = 5) => {
         context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
         context.closePath();
         context.fill();
-        console.warn('drawed');
     } else{
         let tmp = (sObj.dimension)-(sObj.dimension /1.1);
         context.beginPath();
         context.fillStyle = "#e50606";
-        if (entity == 6)context.fillStyle = "#6A2CE3";
+        if (entity > 60)context.fillStyle = "#6A2CE3";
         context.moveTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
         context.lineTo(x + sObj.dimension / 2.6, y + sObj.dimension / 2);
         context.arc(
@@ -223,6 +227,18 @@ let clearRect = (dir, pos) => {
         sObj.dimension
     );
 };
+let refreshGhostsPos = () => {
+    let tmpGhosts = ghostsPos(level);
+    let tmpGhosPk = [];
+    tmpGhosts.forEach(ghost => {
+        let tmp = new Ghost();
+        tmp.position = ghost;
+        tmp.gType = level[ghost[1]-1][ghost[0]-1];
+        tmpGhosPk.push(tmp);
+    });
+    console.warn(tmpGhosPk);
+    return tmpGhosPk;
+}
 export { setScrObj,
     setGameLevel,
     drawScreen,
@@ -233,5 +249,6 @@ export { setScrObj,
     clearScreen,
     drawWin,
     drawScore,
-    freezeGhosts
+    freezeGhosts,
+    refreshGhostsPos,
 };
