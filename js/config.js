@@ -15,21 +15,19 @@ let sObj = {
 let pacman = {
    lifes : 1,
    direction  : "ArrowRight",
+   defPos: [0,0],
    pos: [0,0],
+   lastPoint : -1,
    earnedPoints : 0,
 }
 class Ghost {
-   gType = 21; //6 fro a freezed ghost
+   gType = 21; //6X for a freezed ghost
    scared = false;
+   defPos = [0,0];
    position = [0,0];
+   lastPoint = -1;
    speedMultiplier = 1;
    direction = "ArrowLeft"
-   freeze = () => {
-      this.scared = !this.scared;
-   };
-   move = () => {
-      console.warn("moving randomly ghsts");
-   };
 }
 
 export {sObj, pacman, Ghost};

@@ -38,12 +38,14 @@ class Game {
         let moveHandler = (e) => {
             if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
                 pacman.direction = e.key;
-                let tmpPos = moveEntity(e.key, pacman.pos);
+                let tmpPos = moveEntity(e.key, pacman.pos, pacman.lastPoint);
                 if (pacman.pos.toString() != tmpPos.toString()) {
                     pacman.pos = tmpPos;
                     this.scoreValidation(moveHandler);
                 }
             }
+            console.log(pacman);
+            console.warn(ghostPack);
         };
 
         document.addEventListener("keydown", moveHandler);
@@ -92,11 +94,12 @@ class Game {
         ghostPack = refreshGhostsPos();
         let movmnt = setInterval(() => {
             ghostPack.forEach(ghost => {
-                let tmpPos = moveEntity(ghost.direction, ghost.position, ghost.gType);
+                let tmpPos = moveEntity(ghost.direction, ghost.position, pacman.lastPoint,ghost.gType);
                 if (ghost.position.toString() == tmpPos.toString()) {
                     let directions = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                     ghost.direction = directions[Math.floor(Math.random()*directions.length)];
                 }
+                ghost.position = tmpPos;
             });
             drawLevel();
         }, 10000);
