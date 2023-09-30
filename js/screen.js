@@ -96,7 +96,7 @@ let drawLevel = () => {
     y = 0;
 
 };
-let moveEntity = (dir, pos, lastPoint,elem = 5 ) => {
+let moveEntity = (dir, pos, lastPoint, elem = 5 ) => {
     let arrowPosX = 0,
         arrowPosY = 0;
     let nextPos = 0;
@@ -124,7 +124,7 @@ let moveEntity = (dir, pos, lastPoint,elem = 5 ) => {
             lastEaten = level[pos[1]][pos[0]];
         } else {
             level[arrowPosY][arrowPosX] = elem;
-            if(elem == 5 && lastEaten != -1) level[pos[1]][pos[0]] = 0;
+            if(elem == 5) level[pos[1]][pos[0]] = 0;
             pos = [arrowPosX, arrowPosY];
             lastEaten = nextPos;
         }
@@ -239,7 +239,8 @@ let refreshGhostsPos = () => {
     });
     return tmpGhosPk;
 }
-export { setScrObj,
+export { 
+    setScrObj,
     setGameLevel,
     drawScreen,
     drawLevel,

@@ -10,7 +10,9 @@ import { setScrObj,
     freezeGhosts,
     refreshGhostsPos
 } from "./js/screen.js";
-import {getPos, getLevelPills} from "./js/utility.js"
+import {getPos,
+    getLevelPills
+} from "./js/utility.js"
 import { sObj,
     pacman,
     Ghost
@@ -93,16 +95,31 @@ class Game {
     ghostAutomation = () => {
         ghostPack = refreshGhostsPos();
         let movmnt = setInterval(() => {
-            ghostPack.forEach(ghost => {
-                let tmpPos = moveEntity(ghost.direction, ghost.position, pacman.lastPoint,ghost.gType);
-                if (ghost.position.toString() == tmpPos.toString()) {
-                    let directions = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+            /* ghostPack.forEach(ghost => {
+                let tmpPos = [...ghost.position];
+                let directions = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                while (ghost.position.toString() == tmpPos.toString()){
                     ghost.direction = directions[Math.floor(Math.random()*directions.length)];
+                    tmpPos = moveEntity(ghost.direction, ghost.position, ghost.lastPoint,ghost.gType);
+                    console.log(tmpPos);
+                    console.warn(ghost.position);
                 }
-                ghost.position = tmpPos;
-            });
+                ghost.position = [...tmpPos];
+            }); */
+            for (let idx = 0; idx < ghostPack.length; idx++) {
+                let tmpPos = [...ghostPack[idx].position];
+                let directions = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                while (ghostPack[idx].position.toString() == tmpPos.toString()){
+                    ghostPack[idx].direction = directions[Math.floor(Math.random()*directions.length)];
+                    tmpPos = moveEntity(ghostPack[idx].direction, ghostPack[idx].position, ghostPack[idx].lastPoint,ghostPack[idx].gType);
+                    console.log(tmpPos);
+                    console.warn(ghostPack[idx].position);
+                }
+                ghostPack[idx].position = [...tmpPos];
+                
+            }
             drawLevel();
-        }, 10000);
+        }, 3000);
     };
     
 }
