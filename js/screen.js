@@ -2,37 +2,29 @@ import { ghostsPos, getPos } from "./utility.js";
 import { pacman, Ghost } from "./config.js";
 let sObj = {};
 let canvas, context;
-let x = 0, y = 0;
-let level = [];
-let lastEaten = 0;
+let x = 0, y = 0;//all the game depends on this two,defines the positionament on screen
 let portals = [];
 
 let setScrObj = (screenObj) => {
     sObj = screenObj;
 };
 let setGameLevel = (gameLevel) => {
-    level = structuredClone(gameLevel);
-    portals = [getPos(level,7),getPos(level,8)];
-};
-let getLastEaten = () => {
-    return lastEaten;
-};
-let clearLastEaten = () => {
-    lastEaten = 0;
+    portals = [getPos(gameLevel,7), getPos(gameLevel, 8)];
+    return gameLevel;
 };
 let clearScreen = () => {
     sObj = {};
     x = 0;
     y = 0;
-    level = [];
-    lastEaten = 0;
 };
-let drawScore = () => {
+let drawScore = (level) => {
     context.fillStyle = sObj.backgroundColor;
-    context.fillRect((level[0].length + 1) * sObj.dimension, 54, 80, 40);
+    //context.fillRect((level[0].length + 1) * sObj.dimension, 54, 80, 40);
+    context.fillRect((level.length + 1) * sObj.dimension, 54, 80, 40);
     context.font = "23px monospace";
     context.fillStyle = "yellow";
-    context.fillText(pacman.earnedPoints, (level[0].length + 1) * sObj.dimension, 80);
+    //context.fillText(pacman.earnedPoints, (level[0].length + 1) * sObj.dimension, 80);
+    context.fillText(pacman.earnedPoints, (level.length + 1) * sObj.dimension, 80);
 };
 let drawScreen = () => {
     canvas = document.getElementById(sObj.canvasId);
@@ -42,10 +34,9 @@ let drawScreen = () => {
     context.fillStyle = sObj.backgroundColor;
     context.fillRect(0, 0, sObj.width, sObj.height);
 };
-let drawLevel = () => {
-
+let drawLevel = (level) => {
     drawScreen();
-    drawScore();
+    drawScore(level);
 
     context.fillStyle = "yellow";
     context.font = "23px Arial";
@@ -57,35 +48,13 @@ let drawLevel = () => {
                 context.fillStyle = "blue";
                 context.fillRect(x, y, sObj.dimension, sObj.dimension);
             } else if (xElem == 4) {
-                context.beginPath();
-                context.fillStyle = "#FEFF9F";
-                context.arc(
-                    x + sObj.dimension / 2,
-                    y + sObj.dimension / 2,
-                    sObj.dimension / 8,
-                    0,
-                    Math.PI * 2,
-                    true
-                );
-                context.closePath();
-                context.fill();
+                drawPill([x, y], "#FEFF9F", 8);
             } else if (xElem == 3) {
-                context.beginPath();
-                context.fillStyle = "#2ECC71";
-                context.arc(
-                    x + sObj.dimension / 2,
-                    y + sObj.dimension / 2,
-                    sObj.dimension / 4,
-                    0,
-                    Math.PI * 2,
-                    true
-                );
-                context.closePath();
-                context.fill();
+                drawPill([x, y], "#2ECC71", 4);
             } else if (xElem == 5) {
-                drawEntity(pacman.direction, getPos(level,5),true,xElem);
-            } else if ([21,22,23,24,61,62,63,64].includes(xElem)) {//normal
-                drawEntity('ArrowLeft', [x+sObj.dimension, y+sObj.dimension],true,xElem);
+                drawPacman(pacman.direction, getPos(level, xElem));
+            } else if ([21, 22, 23, 24, 61, 62, 63, 64].includes(xElem)) {//normal
+                drawGhost('ArrowUp', getPos(level, xElem));
             }
             x += sObj.dimension;
         }
@@ -96,7 +65,7 @@ let drawLevel = () => {
     y = 0;
 
 };
-let moveEntity = (dir, pos, lastPoint, elem = 5 ) => {
+let movePlayer = ({ direction: dir, pos, lastEaten, lastPos, type: elem }, level) => {
     let arrowPosX = 0,
         arrowPosY = 0;
     let nextPos = 0;
@@ -115,138 +84,186 @@ let moveEntity = (dir, pos, lastPoint, elem = 5 ) => {
         arrowPosX = pos[0];
     }
     nextPos = level[arrowPosY][arrowPosX];
-    if ([0, 3, 4, 61, 62, 63, 64, 7, 8, undefined].includes(nextPos) ) {
-        level[pos[1]][pos[0]] = lastEaten;
-        if (nextPos == undefined){
-            clearRect(dir,pos);
-            pos = portals.filter(POS => pos.toString() != POS.toString())[0];
-            level[pos[1]][pos[0]] = elem;
+    clearRect(pos, lastEaten, lastPos);
+    if ([0, 3, 4, 21, 22, 23, 24, 61, 62, 63, 64, 7, 8, undefined].includes(nextPos)) {
+        if (nextPos == undefined) {
+            //if the pacman or ghost are in the portals
+            //select the portals and discart the actual player position
+            let newPos = portals.filter(portal => pos.toString() != portal.toString())[0];
+            level[pos[1]][pos[0]] = lastEaten;
             lastEaten = level[pos[1]][pos[0]];
-        } else {
+            level[newPos[1]][newPos[0]]=elem;
+            pos = [...newPos];
+        } else if (elem === 5 & [0, 3, 4, 61, 62, 63, 64, 7, 8].includes(nextPos)){
             level[arrowPosY][arrowPosX] = elem;
-            if(elem == 5) level[pos[1]][pos[0]] = 0;
+            level[pos[1]][pos[0]] = 0;
+            pos = [arrowPosX, arrowPosY];
+            lastEaten = nextPos;
+        }else{
+            console.log("moving ghost");
+            level[arrowPosY][arrowPosX] = elem;
+            level[pos[1]][pos[0]] = lastEaten;
             pos = [arrowPosX, arrowPosY];
             lastEaten = nextPos;
         }
-        console.log(elem,lastEaten);
-        console.warn(level);
-        drawEntity(dir, pos, false, elem);
-    };
-    return pos;
+    }
+    if (elem == 5) {
+        clearRect(pos, lastEaten, lastPos);
+        drawPacman(dir, pos);
+    } else {
+        clearRect(pos, lastEaten, lastPos, true);
+        drawGhost(dir, pos);
+    }
+    return { pos, lastEaten };
 };
-let freezeGhosts = () => {
+let freezeGhosts = (level) => {
     let tmp = 61;
     ghostsPos(level).forEach(pos => {
-        level[pos[1]-1][pos[0]-1] = tmp;
-        tmp ++
+        level[pos[1] - 1][pos[0] - 1] = tmp;
+        tmp++
     });
     let restore = setTimeout(() => {
         let tmp = 21;
         ghostsPos(level).forEach(pos => {
-            level[pos[1]-1][pos[0]-1] = tmp;
+            level[pos[1] - 1][pos[0] - 1] = tmp;
             tmp++;
-            drawLevel();
+            drawLevel(level);
         });
     }, 3000);
 }
-let drawEntity = (dir, pos, first = false, entity = 5) => {
-    if (!first) clearRect(dir, pos);
-    if (entity == 5) {
-        let x = pos[0] * sObj.dimension;
-        let y = pos[1] * sObj.dimension;
-        let conf = [x + sObj.dimension / 2, y + sObj.dimension / 2, sObj.dimension / 2.8, 0, 0, true];
-        if (dir === "ArrowLeft") {
-            conf[3] = Math.PI * 0.75;
-            conf[4] = Math.PI * 1.25;
-        } else if (dir === "ArrowRight") {
-            conf[3] = Math.PI * 1.75;
-            conf[4] = Math.PI * 0.25;
-        } else if (dir === "ArrowDown") {
-            conf[3] = Math.PI * 0.25;
-            conf[4] = Math.PI * 0.75;
-        } else if (dir === "ArrowUp") {
-            conf[3] = Math.PI * 1.25;
-            conf[4] = Math.PI * 1.75;
-        }
-        context.beginPath();
-        context.fillStyle = "yellow";
-        context.arc(...conf);
-        context.lineTo(x + sObj.dimension / 2, y + sObj.dimension / 2);
-        context.closePath();
-        context.fill();
-    } else{
-        let tmp = (sObj.dimension)-(sObj.dimension /1.1);
-        context.beginPath();
-        context.fillStyle = "#e50606";
-        if (entity > 60)context.fillStyle = "#6A2CE3";
-        context.moveTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
-        context.lineTo(x + sObj.dimension / 2.6, y + sObj.dimension / 2);
-        context.arc(
-            x + sObj.dimension / 2,
-            y + sObj.dimension / 2,
-            sObj.dimension / 2.6,
-            0,
-            Math.PI,
-            true
-        );
-        context.lineTo(x + tmp, y + sObj.dimension - tmp);
-        context.lineTo(x+sObj.dimension - tmp, y+sObj.dimension - tmp);
-        context.closePath();
-        context.fill();
+let drawPacman = (dir, pos) => {
+    console.log("pacman", pos, dir);
+    let thisPos = [(pos[0] * sObj.dimension) + sObj.dimension / 2, (pos[1] * sObj.dimension) + sObj.dimension / 2];
+    let conf = [thisPos[0], thisPos[1], sObj.dimension / 2.8, 0, 0, true];
+    if (dir === "ArrowLeft") {
+        conf[3] = Math.PI * 0.75;
+        conf[4] = Math.PI * 1.25;
+    } else if (dir === "ArrowRight") {
+        conf[3] = Math.PI * 1.75;
+        conf[4] = Math.PI * 0.25;
+    } else if (dir === "ArrowDown") {
+        conf[3] = Math.PI * 0.25;
+        conf[4] = Math.PI * 0.75;
+    } else if (dir === "ArrowUp") {
+        conf[3] = Math.PI * 1.25;
+        conf[4] = Math.PI * 1.75;
     }
+    context.beginPath();
+    context.fillStyle = "yellow";
+    context.arc(...conf);
+    context.lineTo(thisPos[0], thisPos[1]);
+    context.closePath();
+    context.fill();
 }
-let drawWin = () => {
+let drawGhost = (dir, pos, ghostType) => {
+
+    let thisPos = [(pos[0] * sObj.dimension), (pos[1] * sObj.dimension)];
+    //dir is for the ghost eyes
+    let tmp = (sObj.dimension) - (sObj.dimension / 1.1);
+    context.beginPath();
+    context.fillStyle = "#e50606";
+    if (ghostType > 60) context.fillStyle = "#6A2CE3";
+    context.moveTo(thisPos[0] + sObj.dimension - tmp, thisPos[1] + sObj.dimension - tmp);
+    context.lineTo(thisPos[0] + sObj.dimension / 2.6, thisPos[1] + sObj.dimension / 2);
+    context.arc(
+        thisPos[0] + sObj.dimension / 2,
+        thisPos[1] + sObj.dimension / 2,
+        sObj.dimension / 2.6,
+        0,
+        Math.PI,
+        true
+    );
+    context.lineTo(thisPos[0] + tmp, thisPos[1] + sObj.dimension - tmp);
+    context.lineTo(thisPos[0] + sObj.dimension - tmp, thisPos[1] + sObj.dimension - tmp);
+    context.closePath();
+    context.fill();
+}
+let drawPill = (pos, color, size) => {
+    // "#FEFF9F",8 for pill 4
+    // "#2ECC71",4 for pill 3
+    // pos[0] = (pos[0] * sObj.dimension);
+    // pos[1] = (pos[1] * sObj.dimension);
+    context.beginPath();
+    context.fillStyle = color;
+    context.arc(
+        pos[0] + sObj.dimension / 2,
+        pos[1] + sObj.dimension / 2,
+        sObj.dimension / size,
+        0,
+        Math.PI * 2,
+        true
+    );
+    context.closePath();
+    context.fill();
+}
+let drawWin = (level) => {
     context.fillStyle = "yellow";
     context.font = "40px monospace";
-    context.fillText("You Win!!", ((level[0].length + 1)* sObj.dimension), 10);
+    context.fillText("You Win!!", ((level[0].length + 1) * sObj.dimension), 10);
     context.font = "20px monospace";
-    context.fillText("Siguiente nivel en 3 segundos", ((level[0].length + 1)* sObj.dimension), 175);
+    context.fillText("Siguiente nivel en 3 segundos", ((level[0].length + 1) * sObj.dimension), 175);
 }
-let clearRect = (dir, pos) => {
-    let cRX = pos[0];
-    let cRY = pos[1];
+
+let clearRect = (pos, lastEaten, lastPos, ghost = false) => {
+    // let cRX = pos[0];
+    // let cRY = pos[1];
     context.fillStyle = sObj.backgroundColor;
-    context.fillRect(
-        pos[0] * sObj.dimension,
-        pos[1] * sObj.dimension,
-        sObj.dimension,
-        sObj.dimension
-    );
-    if (dir === "ArrowLeft") {
-        cRX++;
-    } else if (dir === "ArrowRight") {
-        cRX--;
-    } else if (dir === "ArrowUp") {
-        cRY++;
-    } else if (dir === "ArrowDown") {
-        cRY--;
+    if (!ghost) {
+        context.fillRect(
+            lastPos[0] * sObj.dimension,
+            lastPos[1] * sObj.dimension,
+            sObj.dimension,
+            sObj.dimension
+        );
+        context.fillRect(
+            pos[0] * sObj.dimension,
+            pos[1] * sObj.dimension,
+            sObj.dimension,
+            sObj.dimension
+        );
+    } else if ([3,4].includes(lastEaten)){
+        //temp positions to set
+        let color = lastEaten === 4 ? "#FEFF9F" : "#2ECC71";
+        let size = lastEaten === 4 ? 8 : 4;
+        drawPill(lastPos,color,size);
     }
-    context.fillRect(
-        cRX * sObj.dimension,
-        cRY * sObj.dimension,
-        sObj.dimension,
-        sObj.dimension
-    );
+    // if (dir === "ArrowLeft") {
+    //     cRX++;
+    // } else if (dir === "ArrowRight") {
+    //     cRX--;
+    // } else if (dir === "ArrowUp") {
+    //     cRY++;
+    // } else if (dir === "ArrowDown") {
+    //     cRY--;
+    // }
+    // if (lastEaten !== 0 && entity !== 5){
+    //     if (lastEaten === 4) {
+    //         drawPill("#FEFF9F",8);
+    //     } else if (lastEaten === 3) {
+    //         drawPill("#2ECC71",4);
+    //     }
+    // }else{
+
+    // }
 };
-let refreshGhostsPos = () => {
+
+let refreshGhostsPos = (level) => {
     let tmpGhosts = ghostsPos(level);
     let tmpGhosPk = [];
     tmpGhosts.forEach(ghost => {
         let tmp = new Ghost();
-        tmp.position = ghost;
-        tmp.gType = level[ghost[1]-1][ghost[0]-1];
+        tmp.pos = [...ghost];
+        tmp.gType = level[ghost[1] - 1][ghost[0] - 1];
         tmpGhosPk.push(tmp);
     });
     return tmpGhosPk;
 }
-export { 
+export {
     setScrObj,
     setGameLevel,
     drawScreen,
     drawLevel,
-    moveEntity,
-    getLastEaten,
-    clearLastEaten,
+    movePlayer,
     clearScreen,
     drawWin,
     drawScore,

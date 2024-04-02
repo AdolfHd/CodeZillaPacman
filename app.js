@@ -2,8 +2,7 @@ import {gameLevels} from "./js/level.js";
 import { setScrObj,
     setGameLevel,
     drawLevel,
-    moveEntity,
-    getLastEaten,
+    movePlayer,
     clearScreen,
     drawWin,
     drawScore,
@@ -11,12 +10,14 @@ import { setScrObj,
     refreshGhostsPos
 } from "./js/screen.js";
 import {getPos,
-    getLevelPills
+    getLevelPills,
+    turnAround,
+    ghostsPos,
 } from "./js/utility.js"
 import { sObj,
-    pacman,
-    Ghost
+    pacman
 } from "./js/config.js";
+import { directions } from "./js/constants.js";
 
 let currntLevel = 0;
 let inGameLevel = [];
@@ -27,27 +28,29 @@ let ghostPack = [];
 class Game {
     constructor(){
         setScrObj(sObj);
-        setGameLevel([...gameLevels[currntLevel]]);
-        drawLevel();
-    }
-    play = () => {
-        inGameLevel = [...gameLevels[currntLevel]];
-        setGameLevel(inGameLevel);
+        inGameLevel = setGameLevel([...gameLevels[currntLevel]]);
+        drawLevel(inGameLevel);
         pacman.pos = getPos(inGameLevel,5);
+        pacman.lastPos = [...pacman.pos];
+        ghostPack = refreshGhostsPos(inGameLevel);
+    }
+
+    play = () => {
         totLevelPills = getLevelPills(inGameLevel, [4, 3]);
         totLevelPills += getLevelPills(inGameLevel, [3]);
         this.ghostAutomation();
+
         let moveHandler = (e) => {
-            if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){
+            if (directions.includes(e.key)){
                 pacman.direction = e.key;
-                let tmpPos = moveEntity(e.key, pacman.pos, pacman.lastPoint);
+                let {pos:tmpPos, lastEaten:tmpLastEaten} = movePlayer(pacman, inGameLevel);
                 if (pacman.pos.toString() != tmpPos.toString()) {
-                    pacman.pos = tmpPos;
+                    pacman.lastPos = [...pacman.pos];
+                    pacman.pos = [...tmpPos];
+                    pacman.lastEaten = tmpLastEaten;
                     this.scoreValidation(moveHandler);
                 }
             }
-            console.log(pacman);
-            console.warn(ghostPack);
         };
 
         document.addEventListener("keydown", moveHandler);
@@ -55,25 +58,26 @@ class Game {
             
         }, 600 / sObj.speed);
     };
+
     scoreValidation = (moveHandler) => {
         if (pacman.earnedPoints === totLevelPills) {
             document.addEventListener("keydown", moveHandler, false);
             clearInterval(gameTimer);
             this.win();
-        } else if (getLastEaten() == 2) {
+        } else if (pacman.lastEaten == 2) {
             //game over;
         } else {
-            if (getLastEaten() === 4) pacman.earnedPoints += sObj.pointCategory.pill;
-            if (getLastEaten() === 3) {
+            if (pacman.lastEaten === 4) pacman.earnedPoints += sObj.pointCategory.pill;
+            if (pacman.lastEaten === 3) {
                 pacman.earnedPoints += sObj.pointCategory.supperPills;
-                freezeGhosts();
-                ghostPack = refreshGhostsPos();
-                drawLevel();
+                freezeGhosts(inGameLevel);
+                drawLevel(inGameLevel);
             }
-            if (getLastEaten() === 6) pacman.earnedPoints += sObj.pointCategory.blueGhost;
+            if (pacman.lastEaten === 6) pacman.earnedPoints += sObj.pointCategory.blueGhost;
         }
-        drawScore();
+        drawScore(inGameLevel);
     };
+
     win = () => {
         if (gameLevels.length -1 > currntLevel) {
             currntLevel++;
@@ -84,7 +88,7 @@ class Game {
         pacman.pos = [];
         pacman.earnedPoints= 0;
         totLevelPills = 0;
-        drawWin();
+        drawWin(inGameLevel);
         let resetGame = setInterval(() => {
             clearScreen();
             this.new();
@@ -92,34 +96,19 @@ class Game {
             clearInterval(resetGame);
         }, 3000);
     };
+
     ghostAutomation = () => {
-        ghostPack = refreshGhostsPos();
         let movmnt = setInterval(() => {
-            /* ghostPack.forEach(ghost => {
-                let tmpPos = [...ghost.position];
-                let directions = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                while (ghost.position.toString() == tmpPos.toString()){
-                    ghost.direction = directions[Math.floor(Math.random()*directions.length)];
-                    tmpPos = moveEntity(ghost.direction, ghost.position, ghost.lastPoint,ghost.gType);
-                    console.log(tmpPos);
-                    console.warn(ghost.position);
+            ghostPack.forEach(ghost => {
+                ghost.lastPos = [...ghost.pos];
+                let {pos:tmpPos, lastEaten:tmpLastEaten} = movePlayer(ghost, inGameLevel);
+                ghost.pos = [...tmpPos];
+                ghost.lastEaten = tmpLastEaten;
+                if (ghost.lastPos.toString() === ghost.pos.toString()){
+                    ghost.direction = turnAround(ghost.direction);
                 }
-                ghost.position = [...tmpPos];
-            }); */
-            for (let idx = 0; idx < ghostPack.length; idx++) {
-                let tmpPos = [...ghostPack[idx].position];
-                let directions = ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                while (ghostPack[idx].position.toString() == tmpPos.toString()){
-                    ghostPack[idx].direction = directions[Math.floor(Math.random()*directions.length)];
-                    tmpPos = moveEntity(ghostPack[idx].direction, ghostPack[idx].position, ghostPack[idx].lastPoint,ghostPack[idx].gType);
-                    console.log(tmpPos);
-                    console.warn(ghostPack[idx].position);
-                }
-                ghostPack[idx].position = [...tmpPos];
-                
-            }
-            drawLevel();
-        }, 3000);
+            });
+        }, 10000);
     };
     
 }

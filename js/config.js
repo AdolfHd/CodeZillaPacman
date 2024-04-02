@@ -13,21 +13,24 @@ let sObj = {
    }
 };
 let pacman = {
+   type : 5,
    lifes : 1,
    direction  : "ArrowRight",
    defPos: [0,0],
    pos: [0,0],
-   lastPoint : -1,
+   lastPos: [0,0],
+   lastEaten : 4,
    earnedPoints : 0,
 }
 class Ghost {
-   gType = 21; //6X for a freezed ghost
+   type = 21; //6X for a freezed ghost
    scared = false;
    defPos = [0,0];
-   position = [0,0];
-   lastPoint = -1;
+   pos = [0,0];
+   lastPos = [0,0];
+   lastEaten = 1;
    speedMultiplier = 1;
-   direction = "ArrowLeft"
+   direction = "ArrowUp"
 }
 
 export {sObj, pacman, Ghost};

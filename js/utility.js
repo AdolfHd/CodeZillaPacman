@@ -1,7 +1,9 @@
+import { directions } from "./constants.js";
+
 
 let getPos = (level, toSearch) => {
     let pos = [];
-    let foundIt= false;
+    let foundIt = false;
     level.forEach((element, idx1) => {
         if (!foundIt) {
             pos[0] = element.findIndex((val, idx) => foundIt = val === toSearch);
@@ -18,8 +20,8 @@ let ghostsPos = (level) => {
         var tmpX = 0;
         row.forEach(pos => {
             tmpX++;
-            if ([21,22,23,24,61,62,63,64].includes(pos)) {
-                positions.push([tmpX,tmpY]);
+            if ([21, 22, 23, 24, 61, 62, 63, 64].includes(pos)) {
+                positions.push([tmpX, tmpY]);
             }
         });
     });
@@ -27,10 +29,15 @@ let ghostsPos = (level) => {
 };
 let getLevelPills = (level, toSearch) => {
     let pillCountr = 0;
-    level.forEach((yElem)=>{
+    level.forEach((yElem) => {
         pillCountr += yElem.filter(x => toSearch.includes(x)).length;
     });
     return pillCountr;
 };
+let turnAround = (curDir) => {
+    let idx = directions.filter(e => e !== curDir)[Math.floor(Math.random() * (directions.length - 1))];
+    console.log(idx);
+    return idx;
+};
 
-export {getPos, getLevelPills, ghostsPos};
+export { getPos, getLevelPills, ghostsPos, turnAround };
